@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.luis.dto.CourseDTO;
 import com.luis.dto.mapper.CourseMapper;
@@ -34,7 +33,7 @@ public class CourseService {
       .collect(Collectors.toList());
   }
 
-  public CourseDTO findById(@PathVariable @NotNull @Positive Long id) {
+  public CourseDTO findById(@NotNull @Positive Long id) {
     return courseRepository.findById(id)
       .map(courseMapper::toDTO)
       .orElseThrow(() -> new RecordNotFoundException(id));
@@ -48,12 +47,12 @@ public class CourseService {
     return courseRepository.findById(id)
       .map(response -> {
         response.setName(course.name());
-        response.setCategory(course.category());
+        response.setCategory(courseMapper.convertCategoryValue(course.category()));
         return courseRepository.save(response);
       }).map(courseMapper::toDTO).orElseThrow(() -> new RecordNotFoundException(id));
   }
 
-  public void delete(@PathVariable @NotNull @Positive Long id){
+  public void delete(@NotNull @Positive Long id){
     courseRepository.delete(courseRepository.findById(id).orElseThrow(() -> new RecordNotFoundException(id)));
   }
 }
